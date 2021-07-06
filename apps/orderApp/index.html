@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Order Module</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+    <div class="login-root">
+        <div class="box-root flex-flex flex-direction--column" style="min-height: 100vh;flex-grow: 1;">
+            <div class="box-root padding-top--24 flex-flex flex-direction--column" style="flex-grow: 1; z-index: 9;">
+                <div class="box-root padding-top--48 padding-bottom--24 flex-flex flex-justifyContent--center">
+                    <h1><a href="http://blogs.stackfindover.com/" rel="dofollow">Order Module</a></h1>
+                </div>
+                <div class="formbg-outer">
+                    <div class="formbg">
+                        <div class="formbg-inner padding-horizontal--48">
+                            <span class="padding-bottom--15">Place an Order</span>
+                            <form id="stripe-login" action="/placeOrder" method="POST">
+                                <div class="field padding-bottom--24">
+                                    <label for="email">Order Amount</label>
+                                    <input type="number" placeholder="100" name="orderAmount" required>
+                                </div>
+                                <div class="field padding-bottom--24">
+                                    <div class="grid--50-50">
+                                        <label for="email">Description</label>
+                                    </div>
+                                    <input type="text" placeholder="Description" name="description">
+                                </div>
+                                <div class="field padding-bottom--24">
+                                    <button type="submit">Order</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

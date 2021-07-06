@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Order Module</title>
+    <link rel="stylesheet" type="text/css" href="css/orderViewStyle.css">
+</head>
+
+<body>
+    <h1 style="text-align: center;">Orders</h1>
+    <table style="margin-inline: auto;">
+        <tr>
+            <th>Order Id</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Voucher Status</th>
+        </tr>
+        <% for(var i = 0; i < orders.length; i++) {%>
+            <tr>
+                <td>
+                    <%= orders[i]._id %>
+                </td>
+                <td>
+                    <%= orders[i].orderAmount %>
+                </td>
+                <td>
+                    <%= orders[i].description %>
+                </td>
+                <td>
+                    <%= orders[i].status %>
+                </td>
+                <td>
+                    <%= orders[i].voucherStatus %>
+                </td>
+            </tr>
+            <% } %>
+    </table>
+</body>
+
+</html>

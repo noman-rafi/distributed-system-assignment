@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vouchers Module</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body>
+    <h1 style="text-align: center;">Vouchers</h1>
+    <table style="margin-inline: auto;">
+        <tr>
+            <th>Order Id</th>
+            <th>Voucher Amount</th>
+        </tr>
+        <% for(var i = 0; i < vouchers.length; i++) {%>
+            <tr>
+                <td>
+                    <%= vouchers[i].orderID %>
+                </td>
+                <td>
+                    <%= vouchers[i].voucherAmount %>
+                </td>
+            </tr>
+            <% } %>
+    </table>
+</body>
+
+</html>
