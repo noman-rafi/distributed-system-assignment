@@ -12,6 +12,8 @@ const voucherApi = {
     server: 'http://localhost:3001'
 };
 const voucherAmount = 5;
+var db;
+var ordersCollection;
 
 const app = express();
 app.use(bodyParser.urlencoded({
@@ -21,27 +23,25 @@ app.use(bodyParser.json()); // for handling json data
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs'); // set EJS as view engine
 
-MongoClient.connect(connectionString, {
-        useUnifiedTopology: true
-    })
-    .then(client => {
-        console.log('Connected to Database')
+var dbConnection = MongoClient.connect(connectionString, { useUnifiedTopology: true });
 
-        const db = client.db('orders')
-        const ordersCollection = db.collection('orders')
+// Schedule to retry creating vouchers for failed transactions
+cron.schedule('* * * * *', function() { // This job will run every minute
+    console.log('Running cron job');
+    retryFailedVouchers();
+})
 
-        // Schedule to retry creating vouchers for failed transactions
-        cron.schedule('* * * * *', function() { // This job will run every minute
-            console.log('Running cron job');
-            retryFailedVouchers();
-        })
+// Main html page for placing order
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+})
 
-        // Main html page for placing order
-        app.get('/', (req, res) => {
-            res.sendFile(__dirname + '/index.html');
-        })
+app.post('/placeOrder', (req, res) => {
+    dbConnection.then(client => {
+            console.log('Connected to Database')
+            db = client.db('orders')
+            ordersCollection = db.collection('orders')
 
-        app.post('/placeOrder', (req, res) => {
             req.body["status"] = "sent"
             if (req.body.orderAmount > 100) {
                 req.body["voucherStatus"] = "PENDING"
@@ -63,8 +63,14 @@ MongoClient.connect(connectionString, {
                         //console.error(error)
                 })
         })
+        .catch(error => console.error(error))
+})
 
-        app.get('/showOrders', (req, res) => {
+app.get('/showOrders', (req, res) => {
+    dbConnection.then(client => {
+            console.log('Connected to Database')
+            db = client.db('orders')
+            ordersCollection = db.collection('orders')
             ordersCollection.find().toArray()
                 .then(results => {
                     //console.log(results);
@@ -79,10 +85,15 @@ MongoClient.connect(connectionString, {
                     res.redirect('/')
                 })
         })
+        .catch(error => console.error(error))
+})
 
-        // This will retry generating vouchers for orders worth 100+, whose vouchers failed to be created
-        function retryFailedVouchers() {
-
+// This will retry generating vouchers for orders worth 100+, whose vouchers failed to be created
+function retryFailedVouchers() {
+    dbConnection.then(client => {
+            console.log('Connected to Database')
+            db = client.db('orders')
+            ordersCollection = db.collection('orders')
             console.log('Fetching orders with failed vouchers');
             ordersCollection.find({
                     voucherStatus: "ERROR"
@@ -102,11 +113,17 @@ MongoClient.connect(connectionString, {
                     console.error(error)
                 })
             return;
-        }
+        })
+        .catch(error => console.error(error))
+}
 
-        // API request to generate a voucher
-        function createVoucher(requestData, orderID) {
-            //console.log('Voucher request Data :' + JSON.stringify(requestData));
+// API request to generate a voucher
+function createVoucher(requestData, orderID) {
+    //console.log('Voucher request Data :' + JSON.stringify(requestData));
+    dbConnection.then(client => {
+            console.log('Connected to Database')
+            db = client.db('orders')
+            ordersCollection = db.collection('orders')
             console.log('Sending voucher request');
             axios({
                 method: 'post',
@@ -153,10 +170,9 @@ MongoClient.connect(connectionString, {
 
             });
             return;
-        }
-
-    })
-    .catch(error => console.error(error))
+        })
+        .catch(error => console.error(error))
+}
 
 app.listen(3000, function() {
     console.log('listening on 3000');
